@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { generateText } from 'ai';
 
 export const maxDuration = 30;
 
@@ -33,24 +33,27 @@ export async function POST(req: Request) {
 
     const { google } = await import('@ai-sdk/google');
 
-    const messages = [
-      ...(Array.isArray(history) ? history : []),
-      { role: 'user', content: message },
-    ];
-
+    const promptParts = [];
     if (language) {
-      messages.unshift({
-        role: 'system',
-        content: `Please reply in ${language}.`,
-      });
+      promptParts.push(`Please reply in ${language}.`);
     }
+    if (Array.isArray(history) && history.length) {
+      promptParts.push(
+        history
+          .map((turn: { role: string; content: string }) => `${turn.role === 'user' ? 'User' : 'Assistant'}: ${turn.content}`)
+          .join('\n'),
+      );
+    }
+    promptParts.push(`User: ${message}`);
 
-    const result = streamText({
+    const prompt = promptParts.join('\n\n');
+
+    const { text } = await generateText({
       model: google('gemini-2.5-flash'),
-      messages,
+      prompt,
     });
 
-    return result.toTextStreamResponse();
+    return jsonResponse({ text });
   } catch (error: unknown) {
     console.error('Chat API Error:', error);
     return jsonResponse(
