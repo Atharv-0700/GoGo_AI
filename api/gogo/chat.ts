@@ -1,4 +1,3 @@
-import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 
 export const maxDuration = 30;
@@ -19,6 +18,7 @@ export async function POST(req: Request) {
     console.log({
       GOOGLE_API_KEY_EXISTS: !!process.env.GOOGLE_API_KEY,
       GEMINI_API_KEY_EXISTS: !!process.env.GEMINI_API_KEY,
+      GOOGLE_APPLICATION_CREDENTIALS_EXISTS: !!process.env.GOOGLE_APPLICATION_CREDENTIALS,
     });
 
     if (!process.env.GEMINI_API_KEY) {
@@ -30,6 +30,8 @@ export async function POST(req: Request) {
     if (!message) {
       return jsonResponse({ error: 'Missing required field: message' }, 400);
     }
+
+    const { google } = await import('@ai-sdk/google');
 
     const messages = [
       ...(Array.isArray(history) ? history : []),
