@@ -10,16 +10,19 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+if (process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
+  process.env.GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
+}
+
 export async function POST(req: Request) {
   try {
-    if (!process.env.GOOGLE_API_KEY && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      return jsonResponse(
-        {
-          error:
-            'Google AI credentials are not configured. Please set GOOGLE_API_KEY or GOOGLE_APPLICATION_CREDENTIALS in Vercel environment variables.',
-        },
-        500,
-      );
+    console.log({
+      GOOGLE_API_KEY_EXISTS: !!process.env.GOOGLE_API_KEY,
+      GEMINI_API_KEY_EXISTS: !!process.env.GEMINI_API_KEY,
+    });
+
+    if (!process.env.GEMINI_API_KEY) {
+      return jsonResponse({ error: 'Gemini API key not configured' }, 500);
     }
 
     const { message, history, language } = await req.json();
