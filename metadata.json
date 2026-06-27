@@ -1,0 +1,6 @@
+{
+  "name": "GOGO",
+  "description": "Generative Omni Guidance Operator (GOGO) - A highly intelligent personal AI voice assistant created by Atharva Gogawale. Features real-time speech recognition, natural voice synthesis, wake-word activation, and multilingual conversation powered by Gemini.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
